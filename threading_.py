@@ -41,12 +41,12 @@ t.setDaemon(True)将线程声明为守护线程，必须在start() 方法调用�
 import threading, time, random
 count = 0
 class Counter(threading.Thread):
-    def __init__(self, lock, threadName):
+    def __init__(self, lock, thread_name):
         '''
         lock: 琐对象
-        threadName: 线程名称
+        thread_name: 线程名称
         '''
-        super(Counter, self).__init__(name=threadName)  #注意：一定要显式的调用父类的初始化函数。
+        super(Counter, self).__init__(name=thread_name)  #注意：一定要显式的调用父类的初始化函数。
         self.lock = lock
     
     def run(self):
