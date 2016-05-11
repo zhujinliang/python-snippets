@@ -39,10 +39,6 @@ class Local(object):
     def __iter__(self):
         return iter(self.__storage__.items())
 
-    def __call__(self, proxy):
-        '''Create a proxy for a name.'''
-        return LocalProxy(self, proxy)
-
     def __release_local__(self):
         self.__storage__.pop(self.__ident_func__(), None)
 
@@ -65,3 +61,27 @@ class Local(object):
             del self.__storage__[self.__ident_func__()][name]
         except KeyError:
             raise AttributeError(name)
+
+
+if __name__ == '__main__':
+    import time
+    import random
+    import threading
+
+    local = Local()
+    def set_local():
+        local.test = random.randrange(100)
+        print '%s >> %s \n' % (threading.current_thread(), local.test)
+        time.sleep(3)
+        print 'After sleep. %s >> %s' % (threading.current_thread(), local.test)
+
+    t1 = threading.Thread(target=set_local, name='SetLocalThread')
+    t2 = threading.Thread(target=set_local, name='SetLocalThread')
+    t1.start()
+    t2.start()
+    set_local()
+    t1.join()
+    t2.join()
+    print '%s ended.' % threading.current_thread().name
+
+
