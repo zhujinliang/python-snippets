@@ -1,17 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from functools import update_wrapper
-
-# since each thread has its own greenlet we can just use those as identifiers
-# for the context.  If greenlets are not available we fall back to the
-# current thread ident depending on where it is.
 try:
     from greenlet import getcurrent as get_ident
 except ImportError:
-    try:
-        from thread import get_ident
-    except ImportError:
-        from _thread import get_ident
+    from thread import get_ident
 
 
 def release_local(local):
@@ -21,9 +13,9 @@ def release_local(local):
     Example::
 
         >>> loc = Local()
-        >>> loc.foo = 42
+        >>> loc.test = 12
         >>> release_local(loc)
-        >>> hasattr(loc, 'foo')
+        >>> hasattr(loc, 'test')
         False
     '''
     local.__release_local__()
@@ -38,9 +30,6 @@ class Local(object):
 
     def __iter__(self):
         return iter(self.__storage__.items())
-
-    def __release_local__(self):
-        self.__storage__.pop(self.__ident_func__(), None)
 
     def __getattr__(self, name):
         try:
@@ -61,6 +50,10 @@ class Local(object):
             del self.__storage__[self.__ident_func__()][name]
         except KeyError:
             raise AttributeError(name)
+
+    def __release_local__(self):
+        self.__storage__.pop(self.__ident_func__(), None)
+
 
 
 if __name__ == '__main__':
@@ -83,5 +76,3 @@ if __name__ == '__main__':
     t1.join()
     t2.join()
     print '%s ended.' % threading.current_thread().name
-
-
