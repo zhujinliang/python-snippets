@@ -12,15 +12,11 @@ __all__ = [
 def acquire_lock(lock_key, time=None):
     '''
     Acquire lock.
-    若lock不存在即当前状态为unlock，则获取到，将状态改为locked，返回True
+    若lock不存在即当前状态为unlock，则获取到，返回True
     若lock存在即当前状态为locked，则未获取到，返回False
     '''
-    v = redis.get(lock_key)
-    if v is None:
-        redis.set(lock_key, 1, time)
-        return True
-    else:
-        return False
+    lock = redis.setnx(lock_key, 1, time)
+    return lock
 
 
 def release_lock(lock_key):
