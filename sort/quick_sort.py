@@ -38,7 +38,6 @@ def partition(array, start, end):
         if array[i] < array[end]:
             small += 1
             if i != small:
-                print i, small
                 # 将small指向的大的值和i指向的小的值交换
                 array[i], array[small] = array[small], array[i]
     # 最后再将基准值交换到排序应该在的位置
